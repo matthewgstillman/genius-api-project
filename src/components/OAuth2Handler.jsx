@@ -6,17 +6,19 @@ const OAuth2Handler = () => {
   const { authService } = useContext(AuthContext);
 
   useEffect(() => {
-    if (!authService.isAuthenticated()) {
+    if (authService && !authService.isAuthenticated()) {
       authService.authorize();
     }
   }, [authService]);
 
   useEffect(() => {
     const fetchAccessToken = async () => {
-      const token = authService.getAuthTokens();
-      if (token && token.accessToken) {
-        setAuthToken(token.accessToken);
-        fetchUserData();
+      if (authService) {
+        const token = authService.getAuthTokens();
+        if (token && token.accessToken) {
+          setAuthToken(token.accessToken);
+          fetchUserData();
+        }
       }
     };
 
@@ -34,7 +36,7 @@ const OAuth2Handler = () => {
 
   return (
     <div>
-      {authService.isAuthenticated() ? (
+      {authService && authService.isAuthenticated() ? (
         <div>Authenticated</div>
       ) : (
         <div>Redirecting to login...</div>
