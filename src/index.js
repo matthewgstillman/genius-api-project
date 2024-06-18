@@ -12,6 +12,10 @@ const authConfig = {
   scopes: ["basic"],
 };
 
+console.log(authConfig);
+console.log(process.env.REACT_APP_CLIENT_ID);
+console.log(process.env.REACT_APP_REDIRECT_URI);
+
 const container = document.getElementById("root");
 const root = createRoot(container);
 
