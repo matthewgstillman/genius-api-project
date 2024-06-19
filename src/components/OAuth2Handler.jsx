@@ -1,7 +1,7 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { AuthContext } from 'react-oauth2-code-pkce';
 import { setAuthToken, api } from './ApiComponent';
-import { generatePkcePair } from '../utils/pkce'; 
+import { generatePkcePair } from '../utils/pkce';
 
 const OAuth2Handler = () => {
   const { authService } = useContext(AuthContext);
@@ -35,10 +35,14 @@ const OAuth2Handler = () => {
           const { verifier, challenge } = await generatePkcePair();
           sessionStorage.setItem('pkce_verifier', verifier);
           console.log("User not authenticated, redirecting to authorization...");
-          authService.authorize({
+          
+          const authUrl = authService.getAuthorizationUrl({
             code_challenge: challenge,
             code_challenge_method: 'S256'
           });
+          console.log("Authorization URL:", authUrl);
+
+          window.location = authUrl;
         } else {
           console.log("User already authenticated");
           setIsLoading(false);
@@ -92,3 +96,4 @@ const OAuth2Handler = () => {
 };
 
 export default OAuth2Handler;
+
