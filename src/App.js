@@ -1,33 +1,36 @@
 import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import axios from "axios";
+import Callback from "./Callback";
 
-const App = () => {
+const Home = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("access_token");
 
-      if (code) {
-        try {
-          const response = await axios.get(
-            `http://localhost:3001/callback?code=${code}`
-          );
-          setAccessToken(response.data.access_token);
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error("Authentication failed", error);
-        }
-      }
-    };
-
-    checkAuth();
+    if (token) {
+      setAccessToken(token);
+      setIsAuthenticated(true);
+    }
   }, []);
 
   const handleLogin = () => {
-    window.location.href = "http://localhost:3001/auth";
+    const clientId = process.env.REACT_APP_CLIENT_ID;
+    const redirectUri = process.env.REACT_APP_REDIRECT_URI;
+    const scope = "basic";
+    const state = "some_random_state";
+
+    window.location.href = `https://api.genius.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&scope=${scope}&state=${state}`;
   };
 
   return (
@@ -43,5 +46,14 @@ const App = () => {
     </div>
   );
 };
+
+const App = () => (
+  <Router>
+    <Routes>
+      <Route path="/callback" element={<Callback />} />
+      <Route path="/" element={<Home />} />
+    </Routes>
+  </Router>
+);
 
 export default App;

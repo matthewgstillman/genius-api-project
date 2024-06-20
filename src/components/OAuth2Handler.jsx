@@ -38,9 +38,11 @@ const OAuth2Handler = () => {
           
           const authUrl = authService.getAuthorizationUrl({
             code_challenge: challenge,
-            code_challenge_method: 'S256'
+            code_challenge_method: 'S256',
+            state: 'peruu'
           });
           console.log("Authorization URL:", authUrl);
+          window.location = authUrl;
 
           window.location = authUrl;
         } else {
@@ -96,4 +98,3 @@ const OAuth2Handler = () => {
 };
 
 export default OAuth2Handler;
-

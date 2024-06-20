@@ -1,53 +1,51 @@
 const express = require("express");
-const { AuthorizationCode } = require("simple-oauth2");
-const dotenv = require("dotenv");
-
-dotenv.config();
+const axios = require("axios");
+const qs = require("querystring");
+require("dotenv").config();
 
 const app = express();
-const port = 3001;
-
-const config = {
-  client: {
-    id: process.env.REACT_APP_CLIENT_ID,
-    secret: process.env.REACT_APP_CLIENT_SECRET,
-  },
-  auth: {
-    tokenHost: "https://api.genius.com",
-    authorizePath: "/oauth/authorize",
-    tokenPath: "/oauth/token",
-  },
-};
-
-const client = new AuthorizationCode(config);
+const PORT = 3001;
 
 app.get("/auth", (req, res) => {
-  const authorizationUri = client.authorizeURL({
-    redirect_uri: process.env.REACT_APP_REDIRECT_URI,
-    scope: "basic",
-    state: Math.random().toString(36).substring(7),
-  });
+  const authorizationUrl = `https://api.genius.com/oauth/authorize?${qs.stringify(
+    {
+      client_id: process.env.REACT_APP_CLIENT_ID,
+      redirect_uri: process.env.REACT_APP_REDIRECT_URI,
+      scope: "basic",
+      response_type: "code",
+    }
+  )}`;
 
-  res.redirect(authorizationUri);
+  res.redirect(authorizationUrl);
 });
 
-app.get("/callback", async (req, res) => {
-  const { code } = req.query;
+app.post("/callback", async (req, res) => {
+  const { code } = req.body;
 
-  const options = {
+  const tokenUrl = "https://api.genius.com/oauth/token";
+  const tokenData = {
     code,
+    client_id: process.env.REACT_APP_CLIENT_ID,
+    client_secret: process.env.REACT_APP_CLIENT_SECRET,
     redirect_uri: process.env.REACT_APP_REDIRECT_URI,
+    grant_type: "authorization_code",
   };
 
   try {
-    const accessToken = await client.getToken(options);
-    res.json(accessToken.token);
+    const response = await axios.post(tokenUrl, qs.stringify(tokenData), {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    const { access_token } = response.data;
+    res.json({ access_token });
   } catch (error) {
-    console.error("Access Token Error", error.message);
-    res.status(500).json("Authentication failed");
+    console.error("Error fetching access token:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
