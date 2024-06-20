@@ -26,7 +26,7 @@ const Home = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID;
     const redirectUri = process.env.REACT_APP_REDIRECT_URI;
     const scope = "basic";
-    const state = "some_random_state";
+    const state = "state";
 
     window.location.href = `https://api.genius.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
       redirectUri
