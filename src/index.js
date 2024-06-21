@@ -12,6 +12,13 @@ const authConfig = {
   scopes: ["basic"],
 };
 
+console.log("REACT_APP_CLIENT_ID:", process.env.REACT_APP_CLIENT_ID);
+console.log("REACT_APP_REDIRECT_URI:", process.env.REACT_APP_REDIRECT_URI);
+
+if (!authConfig.clientId) {
+  console.error("REACT_APP_CLIENT_ID is not set");
+}
+
 const container = document.getElementById("root");
 const root = createRoot(container);
 
