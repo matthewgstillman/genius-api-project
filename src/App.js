@@ -7,24 +7,31 @@ const Home = () => {
   const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("access_token");
-
+    const token = localStorage.getItem("access_token");
     if (token) {
       setAccessToken(token);
       setIsAuthenticated(true);
     }
   }, []);
 
+  const generateRandomState = () => {
+    const state = Math.random().toString(36).substring(2, 15);
+    return state;
+  };
+
   const handleLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID;
     const redirectUri = process.env.REACT_APP_REDIRECT_URI;
-    const scope = "scope";
-    const state = "state";
+    const scope = "me";
+    const state = generateRandomState();
 
     const authUrl = `https://api.genius.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
       redirectUri
     )}&scope=${scope}&state=${state}`;
+
+    alert(`Authorization URL: ${authUrl}`);
+    localStorage.setItem("lastAuthUrl", authUrl);
+
     window.location.href = authUrl;
   };
 
@@ -46,7 +53,7 @@ const App = () => (
   <Router>
     <Routes>
       <Route path="/callback" element={<Callback />} />
-      <Route path="/" element={<App />} />
+      <Route path="/" element={<Home />} />
     </Routes>
   </Router>
 );
