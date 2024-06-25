@@ -23,14 +23,13 @@ const OAuth2Handler = () => {
             return;
           }
 
-          authService.handleAuthorizationCode(code, { code_verifier: verifier })
-            .then(() => {
-              console.log("Authorization code handled successfully");
-              setIsLoading(false);
-            })
-            .catch((err) => {
-              console.error("Error handling authorization code", err);
-            });
+          try {
+            await authService.handleAuthorizationCode(code, { code_verifier: verifier });
+            console.log("Authorization code handled successfully");
+            setIsLoading(false);
+          } catch (err) {
+            console.error("Error handling authorization code", err);
+          }
         } else if (!authService.isAuthenticated()) {
           const { verifier, challenge } = await generatePkcePair();
           sessionStorage.setItem('pkce_verifier', verifier);
@@ -42,8 +41,6 @@ const OAuth2Handler = () => {
             state: 'peruu'
           });
           console.log("Authorization URL:", authUrl);
-          window.location = authUrl;
-
           window.location = authUrl;
         } else {
           console.log("User already authenticated");

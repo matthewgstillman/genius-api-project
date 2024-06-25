@@ -35,6 +35,24 @@ const Home = () => {
     window.location.href = authUrl;
   };
 
+  const fetchPublicData = async () => {
+    const clientAccessToken = process.env.REACT_APP_CLIENT_ACCESS_TOKEN;
+    try {
+      const response = await fetch(
+        "https://api.genius.com/some_public_endpoint",
+        {
+          headers: {
+            Authorization: `Bearer ${clientAccessToken}`,
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching public data", error);
+    }
+  };
+
   return (
     <div className="App">
       {!isAuthenticated ? (
@@ -43,6 +61,7 @@ const Home = () => {
         <div>
           <h1>Authenticated</h1>
           <p>Access Token: {accessToken}</p>
+          <button onClick={fetchPublicData}>Fetch Public Data</button>
         </div>
       )}
     </div>
