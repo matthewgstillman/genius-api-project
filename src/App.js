@@ -1,16 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Callback from "./Callback";
+import SearchSongComponent from "./components/SearchSongComponent";
+import axios from "axios";
 
 const Home = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState(null);
 
+  const getApiData = () => {
+    const params = {
+      response_type: "code",
+      client_id:
+        "bbgbwThMyJzgUxDRvzpvfd02u4DGOkqxCt6cT2CZ63ZvWDhUT5t160vPc_g32hm5",
+      redirect_uri: "http://localhost:3000/callback",
+      scope: "me",
+      state:
+        "z2g86qfwiikclient_id=bbgbwThMyJzgUxDRvzpvfd02u4DGOkqxCt6cT2CZ63ZvWDhUT5t160vPc_g32hm5",
+      redirect_uri: "http://localhost:3001/auth/callback",
+      scope: "REQUESTED_SCOPE",
+      state: "SOME_STATE_VALUE",
+      // response_type: "code",
+      response_type: "json",
+    };
+
+    const url = "https://api.genius.com/oauth/authorize";
+
+    axios
+      .get(url, { params })
+      .then((response) => {
+        console.log("Response:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+
+    // const token = process.env.REACT_APP_TOKEN;
     if (token) {
       setAccessToken(token);
       setIsAuthenticated(true);
+      getApiData();
     }
   }, []);
 
@@ -73,6 +106,7 @@ const App = () => (
     <Routes>
       <Route path="/callback" element={<Callback />} />
       <Route path="/" element={<Home />} />
+      <Route path="/searchSong" element={<SearchSongComponent />} />
     </Routes>
   </Router>
 );
