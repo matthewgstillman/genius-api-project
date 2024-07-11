@@ -24,8 +24,8 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <AuthProvider authConfig={authConfig}>
+    {/* <AuthProvider authConfig={authConfig}> */}
       <App />
-    </AuthProvider>
+    {/* </AuthProvider> */}
   </React.StrictMode>
 );
