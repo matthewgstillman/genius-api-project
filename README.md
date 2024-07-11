@@ -68,3 +68,44 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+### DIDN'T WANT TO WRITE SERVER CODE - CORS ANYWHERE SOLUTION
+
+Install CORS Anywhere:
+
+First, you need to clone the CORS Anywhere repository and install its dependencies:
+
+bash
+Copy code
+git clone https://github.com/Rob--W/cors-anywhere.git
+cd cors-anywhere
+npm install
+Run CORS Anywhere Server:
+
+Start the CORS Anywhere server. By default, it runs on port 8080:
+
+bash
+Copy code
+npm start
+
+WHY:
+
+This avoids all the cors errors involved in making requests from the client to genius api.  
+
+The first request https://api.genius.com/oauth/authorize doesn't matter that it is from the client,
+it is just a redirect.
+
+Once we get redirected back to our localhost:3030 and have the 'code', we could send requests to our server 'server.js' from our client 
+to genius (like /oauth/token).  If we send direct from client we see CORS errors.  Instead of messing with
+the server code we just throw CORS anywhere as our proxy server.  Bad for production, good for testing.
+
+So we 'npm start' inside that new cors anywhere project and it spins up a server.
+
+await axios.get('http://localhost:8080/https://api.genius.com/account'
+
+Server is listening on 'http://localhost:8080', then we pipe through our request to get a proper response.
+
+Really we should setup our server to listen and use all this.
+
